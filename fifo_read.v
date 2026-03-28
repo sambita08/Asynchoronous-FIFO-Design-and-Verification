@@ -25,6 +25,9 @@
 
 //-------------PARAMETERS---------------------------
 // ADDR_SIZE: Size of the address bus
+//rbin  → used for address calculation and incrementing (easy math)
+//rptr  → gray code version, sent to write domain via synchronizer
+//        (safe because only 1 bit changes at a time)
 //--------------------------------------------------
 
 module rptr_empty #(parameter ADDR_SIZE = 4)(
@@ -52,7 +55,7 @@ module rptr_empty #(parameter ADDR_SIZE = 4)(
     assign rgray_next = (rbin_next>>1) ^ rbin_next;     // Convert binary to gray code
 
     // Check if the FIFO is empty
-    assign rempty_val = (rgray_next == rq2_wptr);       // Empty flag calculation
+    assign rempty_val = (rgray_next == rq2_wptr);       // Empty flag calculation - Empty when: next read pointer == synchronized write pointer
 
     always @(posedge rclk or negedge rrst_n) begin
         if (!rrst_n)                // Reset the empty flag
